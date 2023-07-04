@@ -1,0 +1,116 @@
+import sys
+import math
+from decimal import Decimal
+from fractions import Fraction
+
+def unknown_finder(listIn):
+    internal_list_out = []
+    for count, i in enumerate(listIn): # finds the unknowns
+        if i == "u":
+            internal_list_out.append(count)
+    return internal_list_out
+def easy_finish(avar, rvar, nvar):
+    answer = (avar*((rvar**nvar)-1))/(rvar-1)
+    print("Sn =", answer, "------- Or =", str(Fraction(answer).limit_denominator()))
+    for i in range(20):
+        print((avar*((rvar**(nvar+i))-1))/(rvar-1))
+def rn(rval, nval, tnval):
+    print("finding missing value {a}")
+    print(f"The formula for the first term is: {tnval} / {rval}^({nval}-1)")
+    print(f"The first term is {tnval/(r**(n-1))}.")
+    return tnval/(rval**(nval-1)) # from tn formula with isolated a variable
+def an(aval, nval, tnval):
+    print("finding missing value {r}")
+    print(f"The formula for common ratio is: {tnval} / {aval} ^ 1 / {nval} - 1")
+    print(f"The common ratio is {((tnval/aval)**(1/(nval-1)))}")
+    return ((tnval/aval)**(1/(nval-1))) # uses tn formula but isolated for r. takes the n-1 root by exponents
+def ar(aval, rval, tnval):
+    print("finding missing value {n}")
+    if rval < 0:
+        print("negative r value. switching to brute force")
+        count = 0
+        predicted_n = 0
+        while count != tnval:
+            count = aval * ((rval) ** predicted_n)
+            predicted_n += 1
+        print("n value found:", predicted_n)
+        return predicted_n
+    else:
+        print(f"The formula for the number of terms is: (log({tnval} / {aval}) / log({rval})) + 1")
+        print(f"The number of terms is {((math.log(tnval/aval))/math.log(rval))}.")
+        return ((math.log(tnval/aval))/math.log(rval))
+def evalulator(var, ifmain):
+    if ifmain == True:
+        return eval(var[1:])
+    else:
+        return eval(var[2:])
+def maincounter(listin):
+    internal_counter = 0
+    for count, i in enumerate(listin):
+        if i == "u" and count < 3:
+            internal_counter += 1
+    return internal_counter
+def find_ratio_from_terms(firstval, firstterm, secondval, secondterm):
+    ratio = ((secondval)/(firstval))**(1/(secondterm - firstterm))
+    print("found ratio from two terms. ", ratio)
+    return ratio
+
+
+x = input("type all inputs in a# r# n# tn# sn# format. u for unknown. ex: a24 r2 n2 u u \n")
+xlist = list(x.split())
+a, r, n, tn, sn = x.split()
+unMap = unknown_finder(xlist)
+main3 = maincounter(xlist)
+
+if len(unMap) == 0: # best case scenario
+    a, r, n = evalulator(a, True), evalulator(r, True), evalulator(n, True)
+    easy_finish(a, r, n)
+    sys.exit(23)
+elif main3 == 0: # best case scenario
+    a, r, n = evalulator(a, True), evalulator(r, True), evalulator(n, True)
+    easy_finish(a, r, n)
+    sys.exit(23)
+elif main3 == 1: # Solve when there's one main unknown
+    if unMap[0] == 0: # missing variable {a}
+        r, n, tn = evalulator(r, True), evalulator(n, True), evalulator(tn, False)
+        easy_finish(rn(r, n, tn), r, n)
+    if unMap[0] == 1: # missing variable {r}
+        a = evalulator(a, True)
+        n = evalulator(n, True)
+        tn = evalulator(tn, False)
+        easy_finish(a, an(a, n, tn), n)
+    if unMap[0] == 2: # missing variable {n}
+        a = evalulator(a, True)
+        r = evalulator(r, True)
+        tn = evalulator(tn, False)
+        easy_finish(a, r, ar(a, r, tn))
+    if unMap[0] == 3: # missing variable {tn}
+        a = evalulator(a, True)
+        r = evalulator(r, True)
+        n = evalulator(n, True)
+        easy_finish(a, r, n)
+    if unMap[0] == 4: # missing variable {sn}
+        a = evalulator(a, True)
+        r = evalulator(r, True)
+        n = evalulator(n, True)
+        easy_finish(a, r, n)
+if "".join(str(e) for e in unMap) == "124":
+    a = evalulator(a, True)
+    tn = evalulator(tn, False)
+    ft, ftn, st, stn = map(int, input("type all inputs in {first_value firstterm# second_value secondterm# format. ex: 32 2 64 3} ").split())
+    r = find_ratio_from_terms(ft, ftn, st, stn)
+    easy_finish(a, r, ar(a, r, tn))    
+# elif main3 == 2: # Solve when there's two main unknowns
+#     option = input("""
+#     type "frn" for finding ratio from two terms and number of terms is unknown
+#     type this or that for that
+#     """)
+#     if option == "frn":
+#         a = evalulator(a, True)
+#         r = find_ratio_from_terms(input("type all inputs in {first_value firstterm# second_value secondterm# format. ex: 32 2 64 3} ").split())
+        
+
+    
+
+
+
